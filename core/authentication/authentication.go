@@ -34,3 +34,10 @@ func (r *Request) Validate() error {
 	}
 	return nil
 }
+
+// Response to authenticate user
+type Response struct {
+	Code         string `json:"code" `
+	Token        string `json:"token"`
+	RefreshToken string `json:"refresh_token"`
+}
