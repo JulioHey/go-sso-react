@@ -33,20 +33,21 @@ func (c *CreateUserRequest) Validate() error {
 	return validate.Struct(c)
 }
 
-// UserPassword model saves user encrypted password
-type UserPassword struct {
+// Password model saves user encrypted password
+type Password struct {
+	repository.Model
 	Password string    `json:"password" validate:"required"`
 	UserID   uuid.UUID `json:"user_id" gorm:"index:userID;not null,column:user_id" validate:"required"`
 	User     User      `json:"-" validate:"-"`
 }
 
 // Validate user password fields
-func (u *UserPassword) Validate() error {
+func (u *Password) Validate() error {
 	return validate.Struct(u)
 }
 
 // HashPassword hashes user password and returns userPassword Model
-func HashPassword(password, userID string) (*UserPassword, error) {
+func HashPassword(password, userID string) (*Password, error) {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 	if err != nil {
 		return nil, err
@@ -57,7 +58,7 @@ func HashPassword(password, userID string) (*UserPassword, error) {
 		return nil, err
 	}
 
-	return &UserPassword{
+	return &Password{
 		Password: string(bytes),
 		UserID:   id,
 	}, nil

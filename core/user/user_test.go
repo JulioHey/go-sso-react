@@ -43,7 +43,7 @@ var _ = Describe("User", func() {
 
 	Context("UserPassword", func() {
 		userID := uuid.New()
-		DescribeTable("Validate", func(input *UserPassword, expectedErr error) {
+		DescribeTable("Validate", func(input *Password, expectedErr error) {
 			err := input.Validate()
 			if expectedErr == nil {
 				Expect(err).ToNot(HaveOccurred())
@@ -51,17 +51,17 @@ var _ = Describe("User", func() {
 				Expect(err).To(HaveOccurred())
 			}
 		},
-			Entry("Valid UserPassword", &UserPassword{
+			Entry("Valid UserPassword", &Password{
 				Password: "123",
 				UserID:   uuid.New(),
 			}, nil),
-			Entry("Invalid UserPassword", &UserPassword{
+			Entry("Invalid UserPassword", &Password{
 				Password: "123",
 			}, errors.New("Teste")),
 		)
 
 		DescribeTable("HashPassword and CheckPassword",
-			func(password, userID string, expectedResult *UserPassword) {
+			func(password, userID string, expectedResult *Password) {
 				result, err := HashPassword(password, userID)
 				if expectedResult == nil {
 					Expect(err).To(HaveOccurred())
@@ -73,7 +73,7 @@ var _ = Describe("User", func() {
 					Expect(result.UserID).To(Equal(expectedResult.UserID))
 				}
 			},
-			Entry("Valid Password", "123", userID.String(), &UserPassword{
+			Entry("Valid Password", "123", userID.String(), &Password{
 				UserID: userID,
 			}),
 			Entry("Valid Password", "123", "123", nil),
