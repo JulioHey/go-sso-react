@@ -7,6 +7,7 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"github.com/stretchr/testify/mock"
+	"gorm.io/gorm"
 )
 
 type mockAuthManager struct {
@@ -19,15 +20,15 @@ type mockCodeManager struct {
 	CodeManager
 }
 
-func (m *mockAuthManager) Authenticate(ctx context.Context,
+func (m *mockAuthManager) Authenticate(ctx context.Context, tx *gorm.DB,
 	req *authentication.Request) error {
-	args := m.Called(ctx, req)
+	args := m.Called(ctx, tx, req)
 	return args.Error(0)
 }
 
-func (m *mockCodeManager) CreateCode(ctx context.Context,
+func (m *mockCodeManager) CreateCode(ctx context.Context, tx *gorm.DB,
 	req *authentication.Request) (*authentication.Response, error) {
-	args := m.Called(ctx, req)
+	args := m.Called(ctx, tx, req)
 	return args.Get(0).(*authentication.Response), args.Error(1)
 }
 
@@ -50,10 +51,10 @@ var _ = Describe("Service Test Suite", Ordered, func() {
 			}
 		})
 		It("should authenticate and create code", func() {
-			authManager.On("Authenticate", mock.Anything,
+			authManager.On("Authenticate", mock.Anything, mock.Anything,
 				mock.Anything).Return(nil)
 
-			codeManager.On("CreateCode", mock.Anything,
+			codeManager.On("CreateCode", mock.Anything, mock.Anything,
 				mock.Anything).Return(&authentication.Response{}, nil)
 
 			res, err := service.AuthenticationFlow(context.Background(), &authentication.Request{})
@@ -63,7 +64,7 @@ var _ = Describe("Service Test Suite", Ordered, func() {
 		})
 
 		It("should not authenticate", func() {
-			authManager.On("Authenticate", mock.Anything,
+			authManager.On("Authenticate", mock.Anything, mock.Anything,
 				mock.Anything).Return(ErrInvalidRequest)
 
 			res, err := service.AuthenticationFlow(context.Background(), &authentication.Request{})
@@ -73,10 +74,10 @@ var _ = Describe("Service Test Suite", Ordered, func() {
 		})
 
 		It("should not create code", func() {
-			authManager.On("Authenticate", mock.Anything,
+			authManager.On("Authenticate", mock.Anything, mock.Anything,
 				mock.Anything).Return(nil)
 
-			codeManager.On("CreateCode", mock.Anything,
+			codeManager.On("CreateCode", mock.Anything, mock.Anything,
 				mock.Anything).Return(&authentication.Response{}, ErrInvalidRequest)
 
 			res, err := service.AuthenticationFlow(context.Background(), &authentication.Request{})

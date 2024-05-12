@@ -2,10 +2,14 @@ package user
 
 import (
 	"authorizer/core/repository"
+	"errors"
 	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
+
+// InvalidUserPasswordError error when password and email dont match
+var InvalidUserPasswordError = errors.New("invalid email or password")
 
 var validate = validator.New()
 
