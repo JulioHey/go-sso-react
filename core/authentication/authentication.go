@@ -12,12 +12,13 @@ var (
 
 // Request to authenticate user
 type Request struct {
-	Scope        string `json:"scope" validate:"required"`
-	ClientID     string `json:"client_id" validate:"required"`
-	ResponseType string `json:"response_type" validate:"isResponseTypeValid"`
-	RedirectURI  string `json:"redirect_uri" validate:"required"`
-	State        string `json:"state" validate:"required"`
-	Nonce        string `json:"nonce" validate:"required"`
+	Scope        string         `json:"scope" validate:"required"`
+	ClientID     string         `json:"client_id" validate:"required"`
+	ResponseType string         `json:"response_type" validate:"isResponseTypeValid"`
+	RedirectURI  string         `json:"redirect_uri" validate:"required"`
+	State        string         `json:"state" validate:"required"`
+	Nonce        string         `json:"nonce" validate:"required"`
+	Extra        map[string]any `json:"extra"`
 }
 
 // isResponseTypeValid checks if the response type is valid.
